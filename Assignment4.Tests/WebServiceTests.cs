@@ -49,10 +49,21 @@ namespace Assignment4.Tests
                 Description = ""
             };
             var (category, statusCode) = PostData(CategoriesApi, newCategory);
+            
+            string id = null;
+            if (category["id"] == null)
+            {
+                var url = category["url"].ToString();
+                id = url.Substring(url.LastIndexOf('/') + 1);
+            }
+            else
+            {
+                id = category["id"].ToString();
+            }
 
             Assert.Equal(HttpStatusCode.Created, statusCode);
 
-            DeleteData($"{CategoriesApi}/{category["id"]}");
+            DeleteData($"{CategoriesApi}/{id}");
         }
 
         [Fact]
@@ -85,16 +96,16 @@ namespace Assignment4.Tests
                 Description = category["description"] + "Updated"
             };
 
-            var statusCode = PutData($"{CategoriesApi}/{category["id"]}", update);
+            var statusCode = PutData($"{CategoriesApi}/{id}", update);
 
             Assert.Equal(HttpStatusCode.OK, statusCode);
 
-            var (cat, _) = GetObject($"{CategoriesApi}/{category["id"]}");
+            var (cat, _) = GetObject($"{CategoriesApi}/{id}");
 
             Assert.Equal(category["name"] + "Updated", cat["name"]);
             Assert.Equal(category["description"] + "Updated", cat["description"]);
 
-            DeleteData($"{CategoriesApi}/{category["id"]}");
+            DeleteData($"{CategoriesApi}/{id}");
         }
 
         [Fact]
@@ -122,8 +133,19 @@ namespace Assignment4.Tests
                 Description = "Created"
             };
             var (category, _) = PostData($"{CategoriesApi}", data);
+            
+            string id = null;
+            if (category["id"] == null)
+            {
+                var url = category["url"].ToString();
+                id = url.Substring(url.LastIndexOf('/') + 1);
+            }
+            else
+            {
+                id = category["id"].ToString();
+            }
 
-            var statusCode = DeleteData($"{CategoriesApi}/{category["id"]}");
+            var statusCode = DeleteData($"{CategoriesApi}/{id}");
 
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
